@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SmartCity.Views.ParkingPage"
+    Title="Parking"
+    BackgroundColor="#F9FAFB">
+
+	<Grid RowDefinitions="Auto,*" ColumnDefinitions="*">
+		<VerticalStackLayout
+            Grid.Row="0"
+            Padding="20"
+            Spacing="16"
+            BackgroundColor="#FFFFFF">
+			<Label
+                Text="Nearby Parking"
+                FontSize="48"
+                FontAttributes="Bold"
+                TextColor="#1F2937"
+                Margin="0,10,0,0" />
+
+			<Frame
+                Padding="14"
+                CornerRadius="14"
+                HasShadow="False"
+                BackgroundColor="#E0E7FF"
+                BorderColor="#818CF8">
+				<HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+					<Label Text="📍" FontSize="18" />
+					<Label
+                        Text="Parking spots in your area"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        TextColor="#3730A3"
+                        VerticalOptions="Center" />
+				</HorizontalStackLayout>
+			</Frame>
+		</VerticalStackLayout>
+
+		<ScrollView Grid.Row="1">
+			<VerticalStackLayout Padding="20" Spacing="12">
+				<ActivityIndicator
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="#3B82F6"
+                    Scale="1.5"
+                    Margin="0,20,0,20" />
+
+				<CollectionView
+                    ItemsSource="{Binding ParkingSpots}"
+                    SelectionMode="None">
+					<CollectionView.ItemsLayout>
+						<LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+					</CollectionView.ItemsLayout>
+					<CollectionView.ItemTemplate>
+						<DataTemplate>
+							<Frame
+                                Padding="18"
+                                Margin="0"
+                                CornerRadius="20"
+                                HasShadow="True"
+                                BackgroundColor="White"
+                                BorderColor="Transparent">
+								<VerticalStackLayout Spacing="14">
+									<HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+										<Label Text="🅿️" FontSize="22" />
+										<Label
+                                            Text="{Binding Name}"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            TextColor="#1F2937"
+                                            VerticalOptions="Center"
+                                            LineBreakMode="TailTruncation"
+                                            HorizontalOptions="FillAndExpand" />
+									</HorizontalStackLayout>
+
+									<HorizontalStackLayout Spacing="10" VerticalOptions="Start">
+										<Label Text="📍" FontSize="14" Opacity="0.7" />
+										<Label
+                                            Text="{Binding Address}"
+                                            FontSize="13"
+                                            TextColor="#4B5563"
+                                            VerticalOptions="Start"
+                                            LineBreakMode="WordWrap"
+                                            HorizontalOptions="FillAndExpand" />
+									</HorizontalStackLayout>
+
+									<HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+										<Label Text="🕐" FontSize="14" Opacity="0.7" />
+										<Label
+                                            Text="{Binding Hours}"
+                                            FontSize="13"
+                                            TextColor="#4B5563"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="FillAndExpand" />
+									</HorizontalStackLayout>
+
+									<HorizontalStackLayout Spacing="10" VerticalOptions="Center" IsVisible="{Binding AvailableSpots, Converter={StaticResource IsGreaterThanZeroConverter}}">
+										<Label Text="🅿️" FontSize="14" Opacity="0.7" />
+										<Label
+                                            Text="{Binding AvailableSpots, StringFormat='Available Spots: {0}'}"
+                                            FontSize="13"
+                                            TextColor="#4B5563"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="FillAndExpand" />
+									</HorizontalStackLayout>
+
+									<HorizontalStackLayout Spacing="10" VerticalOptions="Center" IsVisible="{Binding Price, Converter={StaticResource IsGreaterThanZeroConverter}}">
+										<Label Text="💰" FontSize="14" Opacity="0.7" />
+										<Label
+                                            Text="{Binding Price, StringFormat='${0:F2} per hour'}"
+                                            FontSize="13"
+                                            TextColor="#4B5563"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="FillAndExpand" />
+									</HorizontalStackLayout>
+
+									<Frame
+                                        Padding="12"
+                                        CornerRadius="10"
+                                        HasShadow="False"
+                                        BackgroundColor="#FEF3C7"
+                                        Margin="0,4,0,0"
+                                        IsVisible="{Binding Notes, Converter={StaticResource HasValueConverter}}">
+										<HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+											<Label Text="✨" FontSize="14" />
+											<Label
+                                                Text="{Binding Notes}"
+                                                FontSize="12"
+                                                TextColor="#92400E"
+                                                VerticalOptions="Center"
+                                                LineBreakMode="WordWrap"
+                                                HorizontalOptions="FillAndExpand" />
+										</HorizontalStackLayout>
+									</Frame>
+
+									<Button
+                                        Text="📍 Get Directions"
+                                        BackgroundColor="#10B981"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        FontSize="14"
+                                        FontAttributes="Bold"
+                                        Padding="12,12"
+                                        Margin="0,4,0,0"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnGetDirectionsClicked" />
+								</VerticalStackLayout>
+							</Frame>
+						</DataTemplate>
+					</CollectionView.ItemTemplate>
+				</CollectionView>
+
+				<BoxView HeightRequest="30" BackgroundColor="Transparent" />
+			</VerticalStackLayout>
+		</ScrollView>
+	</Grid>
+</ContentPage>

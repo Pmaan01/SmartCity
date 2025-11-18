@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SmartCity.Views.WeatherPage"
+    Title="Weather"
+    BackgroundColor="#F9FAFB">
+    <Grid RowDefinitions="*" ColumnDefinitions="*">
+        <Frame x:Name="BackgroundFrame"
+            Grid.Row="0"
+            Grid.Column="0"
+            CornerRadius="0"
+            Padding="0"
+            HasShadow="False"
+            BorderColor="Transparent"
+            BackgroundColor="#87CEEB">
+            <Grid />
+        </Frame>
+
+        <ScrollView Grid.Row="0" Grid.Column="0">
+            <VerticalStackLayout Padding="20" Spacing="20">
+                <Label
+                    Text="Weather"
+                    FontSize="54"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    Margin="0,20,0,10" />
+
+                <Frame
+                    Padding="20"
+                    CornerRadius="24"
+                    HasShadow="True"
+                    BackgroundColor="White"
+                    BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Select City" FontSize="14" FontAttributes="Bold" TextColor="#6B7280" />
+                        <Picker
+                            Title="Choose a city..."
+                            ItemsSource="{Binding Cities}"
+                            SelectedItem="{Binding SelectedCity}"
+                            FontSize="15"
+                            TextColor="#1F2937"
+                            TitleColor="#9CA3AF" />
+                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                            <Entry
+                                x:Name="CityEntry"
+                                Placeholder="Search city..."
+                                Text="{Binding CityInput}"
+                                PlaceholderColor="#D1D5DB"
+                                TextColor="#1F2937"
+                                FontSize="15"
+                                HorizontalOptions="FillAndExpand" />
+                            <Button
+                                Text="🔍"
+                                Command="{Binding SearchCommand}"
+                                CommandParameter="{Binding CityInput}"
+                                WidthRequest="50"
+                                HeightRequest="50"
+                                CornerRadius="12"
+                                BackgroundColor="#3B82F6"
+                                TextColor="White"
+                                FontSize="20"
+                                Padding="0"
+                                Margin="0" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <Frame
+                    Padding="0"
+                    CornerRadius="36"
+                    HasShadow="True"
+                    BackgroundColor="#1A000000"
+                    BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="20" Padding="36">
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                Text="{Binding Weather.City}"
+                                FontSize="40"
+                                FontAttributes="Bold"
+                                TextColor="White" />
+                            <Label
+                                Text="{Binding Weather.FetchedAt, StringFormat='Updated: {0:HH:mm}'}"
+                                FontSize="12"
+                                TextColor="#E6FFFFFF"
+                                IsVisible="{Binding HasWeather}" />
+                        </VerticalStackLayout>
+
+                        <HorizontalStackLayout Spacing="28" VerticalOptions="Center">
+                            <Label
+                                Text="{Binding Weather.TempC, StringFormat='{0:N0}'}"
+                                FontSize="96"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                LineHeight="0.85" />
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="14">
+                                <Label
+                                    Text="°C"
+                                    FontSize="36"
+                                    FontAttributes="Bold"
+                                    TextColor="#E6FFFFFF" />
+                                <Label
+                                    Text="{Binding Weather.Condition}"
+                                    FontSize="18"
+                                    FontAttributes="Bold"
+                                    TextColor="#F2FFFFFF"
+                                    LineBreakMode="WordWrap"
+                                    MaximumWidthRequest="120" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <Button
+                            Text="⟲ Refresh"
+                            Command="{Binding RefreshCommand}"
+                            BackgroundColor="#40FFFFFF"
+                            TextColor="White"
+                            CornerRadius="14"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Padding="16,12"
+                            BorderColor="#80FFFFFF"
+                            BorderWidth="2"
+                            Margin="0,8,0,0" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <VerticalStackLayout Spacing="16">
+                    <Label
+                        Text="3-Day Forecast"
+                        FontSize="24"
+                        FontAttributes="Bold"
+                        TextColor="White" />
+
+                    <CollectionView ItemsSource="{Binding Weather.Forecast}" SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame
+                                    Padding="20"
+                                    CornerRadius="20"
+                                    HasShadow="False"
+                                    BackgroundColor="#1A000000"
+                                    BorderColor="#40FFFFFF">
+                                    <HorizontalStackLayout Spacing="20" VerticalOptions="Center">
+                                        <VerticalStackLayout WidthRequest="90" VerticalOptions="Center" Spacing="8">
+                                            <Label
+                                                Text="{Binding Date, StringFormat='{0:ddd}'}"
+                                                FontSize="18"
+                                                FontAttributes="Bold"
+                                                TextColor="White" />
+                                            <Label
+                                                Text="{Binding Date, StringFormat='{0:M/d}'}"
+                                                FontSize="13"
+                                                TextColor="#CCF3F4F6" />
+                                        </VerticalStackLayout>
+
+                                        <Label
+                                            Text="{Binding Condition}"
+                                            FontSize="15"
+                                            FontAttributes="Bold"
+                                            TextColor="White"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="FillAndExpand"
+                                            LineBreakMode="WordWrap" />
+
+                                        <HorizontalStackLayout VerticalOptions="Center" Spacing="18">
+                                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                                <Label
+                                                    Text="Max"
+                                                    FontSize="11"
+                                                    TextColor="#B3FFFFFF" />
+                                                <Label
+                                                    Text="{Binding Max, StringFormat='{0:N0}°'}"
+                                                    FontSize="20"
+                                                    FontAttributes="Bold"
+                                                    TextColor="White" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout VerticalOptions="Center" Spacing="4">
+                                                <Label
+                                                    Text="Min"
+                                                    FontSize="11"
+                                                    TextColor="#B3FFFFFF" />
+                                                <Label
+                                                    Text="{Binding Min, StringFormat='{0:N0}°'}"
+                                                    FontSize="20"
+                                                    FontAttributes="Bold"
+                                                    TextColor="#E6FFFFFF" />
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <BoxView HeightRequest="40" BackgroundColor="Transparent" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

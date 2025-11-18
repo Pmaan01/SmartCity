@@ -1,0 +1,23 @@
+{
+  "profiles": {
+    "Windows Machine": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "OPENWEATHER_API_KEY": "8503c207d70e09f2d6031c7649e4752d",
+        "OPENAQ_API_KEY": "1b8fb03e10ce44422b0425f00dbd02500d71197e1f445d22878b06aa1b822e7c",
+        "NEWSAPI_API_KEY": "fb012f2a2eaa4cc6a5a6b2ee9471ba7f",
+        "GOOGLE_MAPS_API_KEY": "AIzaSyBqiSFZXWKxURzmbE9wN1X3e6szTIBlMzw"
+      },
+      "nativeDebugging": true
+    },
+    "Android Emulator": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "OPENWEATHER_API_KEY": "8503c207d70e09f2d6031c7649e4752d",
+        "OPENAQ_API_KEY": "1b8fb03e10ce44422b0425f00dbd02500d71197e1f445d22878b06aa1b822e7c",
+        "NEWSAPI_API_KEY": "fb012f2a2eaa4cc6a5a6b2ee9471ba7f",
+        "GOOGLE_MAPS_API_KEY": "AIzaSyBqiSFZXWKxURzmbE9wN1X3e6szTIBlMzw"
+      }
+    }
+  }
+}
