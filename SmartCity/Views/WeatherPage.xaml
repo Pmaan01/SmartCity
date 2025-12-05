@@ -131,7 +131,7 @@
                         FontAttributes="Bold"
                         TextColor="White" />
 
-                    <CollectionView ItemsSource="{Binding Weather.Forecast}" SelectionMode="None">
+                    <CollectionView ItemsSource="{Binding Weather.Forecast}" SelectionMode="None" HeightRequest="400">
                         <CollectionView.ItemsLayout>
                             <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
                         </CollectionView.ItemsLayout>
