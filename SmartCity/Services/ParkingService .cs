@@ -20,38 +20,61 @@ namespace SmartCity.Services
 
         public async Task<IEnumerable<ParkingSpot>> GetNearbyAsync()
         {
+            System.Diagnostics.Debug.WriteLine("ParkingService: GetNearbyAsync called");
+
             if (string.IsNullOrWhiteSpace(_apiKey))
             {
+                System.Diagnostics.Debug.WriteLine("ParkingService: No API key, returning mock spots");
                 await Task.Delay(150);
                 return MockSpots();
             }
 
             try
             {
+                // Request location permission
+                System.Diagnostics.Debug.WriteLine("ParkingService: Requesting location permission");
                 var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+                System.Diagnostics.Debug.WriteLine($"ParkingService: Initial permission status: {status}");
+
                 if (status != PermissionStatus.Granted)
                 {
                     status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                    System.Diagnostics.Debug.WriteLine($"ParkingService: After request, permission status: {status}");
                 }
 
                 if (status != PermissionStatus.Granted)
                 {
+                    System.Diagnostics.Debug.WriteLine("ParkingService: Location permission denied, returning mock spots");
                     return MockSpots();
                 }
 
-                var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(8));
+                // Get location with proper timeout and error handling
+                System.Diagnostics.Debug.WriteLine("ParkingService: Getting device location");
+                var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
                 var location = await Geolocation.Default.GetLocationAsync(request);
 
                 if (location == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("ParkingService: Location is null, returning mock spots");
                     return MockSpots();
+                }
 
                 var lat = location.Latitude;
                 var lon = location.Longitude;
+                System.Diagnostics.Debug.WriteLine($"ParkingService: Got location - Lat: {lat}, Lon: {lon}");
 
+                // Call Google Places API
                 var url = $"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lon}&radius=2000&type=parking&key={_apiKey}";
+                System.Diagnostics.Debug.WriteLine($"ParkingService: Calling API: {url}");
 
                 using var res = await _http.GetAsync(url);
-                res.EnsureSuccessStatusCode();
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ParkingService: API returned {res.StatusCode}");
+                    return MockSpots();
+                }
+
                 await using var stream = await res.Content.ReadAsStreamAsync();
                 using var doc = await JsonDocument.ParseAsync(stream);
                 var root = doc.RootElement;
@@ -60,11 +83,14 @@ namespace SmartCity.Services
 
                 if (root.TryGetProperty("results", out var results))
                 {
+                    System.Diagnostics.Debug.WriteLine($"ParkingService: Found {results.GetArrayLength()} parking spots");
+
                     foreach (var r in results.EnumerateArray())
                     {
                         var name = r.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "";
                         var vicinity = r.TryGetProperty("vicinity", out var v) ? v.GetString() ?? "" : "";
                         double plat = 0, plon = 0;
+
                         if (r.TryGetProperty("geometry", out var geom) &&
                             geom.TryGetProperty("location", out var loc) &&
                             loc.TryGetProperty("lat", out var platEl) &&
@@ -89,12 +115,18 @@ namespace SmartCity.Services
                 }
 
                 if (list.Count == 0)
+                {
+                    System.Diagnostics.Debug.WriteLine("ParkingService: No results from API, returning mock spots");
                     return MockSpots();
+                }
 
+                System.Diagnostics.Debug.WriteLine($"ParkingService: Returning {list.Count} real parking spots");
                 return list;
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"ParkingService: Exception - {ex.GetType().Name}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"ParkingService: StackTrace: {ex.StackTrace}");
                 return MockSpots();
             }
         }
